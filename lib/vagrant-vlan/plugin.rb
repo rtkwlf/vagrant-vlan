@@ -15,8 +15,16 @@ module VagrantPlugins
         # configuration middleware) do the actual network configuration on the
         # way up the middleware stack. Therefore, this ensures that we will
         # configure the vlans after the rest of the interfaces.
+
+        # Hook in before VirtualBox provider
         hook.before(VagrantPlugins::ProviderVirtualBox::Action::Network,
                     Action)
+
+        if Vagrant.has_plugin?("vagrant-lxc")
+          require "vagrant-lxc/action"
+          # Hook in before LXC provider if we have one
+          hook.before(Vagrant::LXC::Action::PrivateNetworks, Action)
+        end
       end
 
       config "vlan" do

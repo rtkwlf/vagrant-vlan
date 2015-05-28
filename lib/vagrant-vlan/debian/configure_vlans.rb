@@ -13,8 +13,10 @@ module VagrantPlugins
         def self.configure_vlans(machine, vlans)
           machine.communicate.tap do |comm|
             # Verify the kernel module is installed and loaded.
-            if !comm.test("lsmod | grep 8021q")
+            if !comm.test("dpkg -l | grep vlan")
               comm.sudo("apt-get install vlan")
+            end
+            if !comm.test("lsmod | grep 8021q")
               comm.sudo("modprobe 8021q")
             end
 
